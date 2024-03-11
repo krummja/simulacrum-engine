@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pygame as pyg
 
-from simulacrum_engine.io_utils import read_json
+from simulacrum_engine.utils.io_utils import read_json
 
 
 class InputState:

@@ -24,6 +24,11 @@ class Renderable(NamedTuple, Generic[T]):
     render_params: T
     z_level: int
 
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, Renderable):
+            return self.z_level < other.z_level
+        return False
+
 
 class BlitParams(TypedDict):
     source: Surface
@@ -32,7 +37,12 @@ class BlitParams(TypedDict):
 
 class BlitFunction(RenderFunction[BlitParams]):
 
-    def __call__(self, destination: Surface, params: BlitParams, z_level: int) -> None:
+    def __call__(
+        self,
+        destination: Surface,
+        params: BlitParams,
+        z_level: int
+    ) -> None:
         self.params = params
         self.z_level = z_level
         source = self.params["source"]
@@ -42,11 +52,6 @@ class BlitFunction(RenderFunction[BlitParams]):
             destination.blit(source, position)
         else:
             destination.blit(source, position, special_flags=pyg.BLEND_RGBA_ADD)
-
-    def __lt__(self, other: object) -> bool:
-        if isinstance(other, BlitFunction):
-            return self.z_level < other.z_level
-        return False
 
 
 class Renderer:
@@ -62,13 +67,18 @@ class Renderer:
         self.groups = groups
         self.reset()
 
-    def blit(self, params: BlitParams, z_level: int = 0) -> None:
+    def blit(
+        self,
+        params: BlitParams,
+        z_level: int = 0,
+        group: str = "default"
+    ) -> None:
         renderable = Renderable[BlitParams](
             render_function=BlitFunction(),
             render_params=params,
             z_level=z_level
         )
-        self.queue_render(renderable)
+        self.queue_render(renderable, group)
 
     def queue_render(
         self,

@@ -12,6 +12,7 @@ from pygame.locals import *
 
 import simulacrum_engine as siml
 from simulacrum_engine.renderer import Position
+from simulacrum_engine.ui_lib.text import UIText
 
 
 TEST_DIR = Path(__file__).parent.resolve()
@@ -40,11 +41,27 @@ def load_png(filename: str) -> tuple[pyg.Surface, pyg.Rect]:
 
 class Game(siml.Game):
 
+    def __init__(
+        self,
+        width: int = 960,
+        height: int = 630,
+        scale: int = 1,
+        resizable: bool = False,
+    ) -> None:
+        self.width = width
+        self.height = height
+        self.scale = scale
+        self.resizable = pyg.RESIZABLE if resizable else 0
+
     def load(self) -> None:
+
         self.window = siml.Window(
-            dimensions=(960, 630),
+            dimensions=(self.width, self.height),
             title="Test Title",
+            flags=self.resizable,
             opengl=True,
+            fps_cap=60,
+            frag_path=Path(TEST_DIR, "frag.frag"),
         )
 
         self.input = siml.Input(CONFIG)
@@ -53,13 +70,11 @@ class Game(siml.Game):
         self.renderer = siml.Renderer()
         self.renderer.set_groups(["ui", "default"])
 
-        self.display = pyg.Surface((960, 630))
-        self.ui_surf = pyg.Surface((960, 630), pyg.SRCALPHA)
+        display_size = (self.width // self.scale, self.height // self.scale)
+        self.display = pyg.Surface(display_size)
+        self.ui_surf = pyg.Surface(display_size, pyg.SRCALPHA)
 
-        font = pyg.font.Font(None, 36)
-        self.text = font.render("Hello World!", True, (255, 255, 255))
-        self.textpos = self.text.get_rect()
-        self.textpos.centerx = self.display.get_rect().centerx
+        self.text = UIText(Path(TEST_DIR, "fonts"))
 
         self.glow_img = pyg.Surface((255, 255))
         self.glow_img.fill((round(174 * 0.2), round(266 * 0.2), round(255 * 0.3)))
@@ -72,7 +87,7 @@ class Game(siml.Game):
         )
 
         self.fireflies = []
-        for _ in range(20):
+        for _ in range(200):
             self.fireflies.append([
                 [
                     random.random() * self.display.get_width(),
@@ -119,10 +134,10 @@ class Game(siml.Game):
         self.display.fill((21, 21, 21))
         self.ui_surf.fill((0, 0, 0, 0))
 
-        self.renderer.blit({
-            "source": self.text,
-            "position": Position(self.textpos.x, self.textpos.y),
-        }, z_level=1)
+        self.text["large_font"].render_with(self.renderer, {
+            "text": f"{round(self.window.fps)}",
+            "loc": (self.display.get_rect().centerx, 0),
+        })
 
         self.render_background()
 
@@ -133,12 +148,16 @@ class Game(siml.Game):
 
         self.window.cycle({
             "surface": self.display,
-            "ui_urf": self.ui_surf,
+            "ui_surf": self.ui_surf,
         })
 
 
 def main() -> None:
-    game = Game()
+    game = Game(
+        width=1024,
+        height=768,
+        scale=3,
+    )
     game.run()
 
 

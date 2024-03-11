@@ -42,7 +42,7 @@ class Window:
         self.time = time.time()
         self.start_time = time.time()
         self.frames = 0
-        self.frame_log = []
+        self.frame_log = [0.1]
 
         pyg.init()
         pyg.display.set_caption(title)
@@ -94,7 +94,8 @@ class Window:
 
         self.last_frame = time.time()
 
-        self.screen.fill(self.background_color)
+        # self.screen.fill(self.background_color)
+
         if self.render_object:
             self.mgl.ctx.clear(
                 *[self.background_color[i] / 255 for i in range(3)],

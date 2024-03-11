@@ -88,7 +88,7 @@ class RenderObject:
 
     def parse_uniforms(self, uniforms: dict[str, Uniform]) -> dict[str, Uniform]:
         for name, value in uniforms.items():
-            if type(value) == pyg.Surface:
+            if isinstance(value, pyg.Surface):
                 texture = self.mgl.pg_to_tex(value)
                 uniforms[name] = texture
                 self.temp_textures.append(texture)
