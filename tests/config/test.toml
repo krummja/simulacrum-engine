@@ -1,0 +1,16 @@
+
+[window]
+width = 1024
+height = 768
+title = "Test"
+icon_path = "../textures/icon.png"
+fps_cap = 60
+resizable = false
+fullscreen = false
+
+[shaders]
+opengl = true
+fragment_path = "D:/Workspace/Python/simulacrum-engine/tests/shaders/frag.frag"
+
+[input]
+quit = "escape"

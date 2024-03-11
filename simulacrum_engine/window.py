@@ -9,30 +9,19 @@ from pathlib import Path
 from simulacrum_engine.input import Input
 from simulacrum_engine.shaderlib import MGL
 
-
-ColorValue = pyg.Color | int | str | tuple[int, int, int] | Sequence[int]
+from simulacrum_engine.config import WindowConfig
+from simulacrum_engine.config import ShaderConfig
 
 
 class Window:
 
-    def __init__(
-        self,
-        *,
-        dimensions: tuple[int, int],
-        title: str = "",
-        flags: int = 0,
-        fps_cap: int = 60,
-        dt: int = 1,
-        opengl: bool = False,
-        frag_path: Path | None = None,
-    ) -> None:
-        self.dimensions = dimensions
-        self.title = title
-        self.flags = flags
-        self.fps_cap = fps_cap
-        self.dt = dt
-        self.opengl = opengl
-        self.frag_path = frag_path
+    def __init__(self, window: WindowConfig, shader: ShaderConfig) -> None:
+        self.dimensions = (window.width, window.height)
+        self.title = window.title
+        self.flags = pyg.RESIZABLE if window.resizable else 0
+        self.fps_cap = window.fps_cap
+        self.opengl = shader.opengl
+        self.frag_path = shader.fragment_path
 
         if self.opengl:
             self.flags = self.flags | pyg.DOUBLEBUF | pyg.OPENGL
@@ -45,22 +34,26 @@ class Window:
         self.frame_log = [0.1]
 
         pyg.init()
-        pyg.display.set_caption(title)
+        pyg.display.set_caption(self.title)
 
-        self.input: Input | None = None
         self.screen = pyg.display.set_mode(self.dimensions, self.flags)
-        self.clock = pyg.time.Clock()
+        if window.icon_path:
+            icon = pyg.image.load(window.icon_path).convert_alpha()
+            pyg.display.set_icon(icon)
 
+        self.clock = pyg.time.Clock()
         self.last_frame = time.time()
         self.dt = 0.1
 
+        self.input: Input | None = None
+
         self.render_object = None
-        if opengl:
+        if self.opengl:
             self.mgl = MGL()
             if self.frag_path is None:
                 self.render_object = self.mgl.default_render_object()
             else:
-                self.render_object = self.mgl.render_object(self.frag_path)
+                self.render_object = self.mgl.render_object(str(self.frag_path))
 
     @property
     def fps(self) -> float:
@@ -94,7 +87,7 @@ class Window:
 
         self.last_frame = time.time()
 
-        # self.screen.fill(self.background_color)
+        self.screen.fill(self.background_color)
 
         if self.render_object:
             self.mgl.ctx.clear(

@@ -10,6 +10,7 @@ from pathlib import Path
 import pygame as pyg
 
 from simulacrum_engine.utils.io_utils import read_json
+from simulacrum_engine.config import InputConfig
 
 
 class InputState:
@@ -36,16 +37,17 @@ class InputState:
 
 class Input:
 
-    def __init__(self, config_path: str | Path | None = None) -> None:
+    def __init__(self, config: InputConfig) -> None:
         self.state = "main"
         self.text_buffer = None
 
-        self.config = read_json(config_path) if config_path else {}
-        self.input = {key: InputState() for key in self.config}
+        self.input = {}
+        for value in config.model_dump().values():
+            self.input[pyg.key.key_code(value)] = InputState()
 
         self.repeat_rate = 0.2
         self.repeat_delay = 0.5
-        self.repeat_times = {key: time.time() for key in self.config}
+        self.repeat_times = {key: time.time() for key in config.model_dump()}
         self.shift = False
 
     def pressed(self, key: str) -> bool:

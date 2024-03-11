@@ -46,41 +46,11 @@ def load_png(filename: str) -> tuple[pyg.Surface, pyg.Rect]:
 
 class Game(siml.Game):
 
-    def __init__(
-        self,
-        width: int = 960,
-        height: int = 630,
-        scale: int = 1,
-        resizable: bool = False,
-    ) -> None:
-        self.width = width
-        self.height = height
-        self.scale = scale
-        self.resizable = pyg.RESIZABLE if resizable else 0
+    def __init__(self) -> None:
+        super().__init__(CONFIG_DIR, "test.toml")
 
     def load(self) -> None:
-
-        self.window = siml.Window(
-            dimensions=(self.width, self.height),
-            title="Test Title",
-            flags=self.resizable,
-            opengl=True,
-            fps_cap=60,
-            frag_path=Path(SHADER_DIR, "frag.frag"),
-        )
-
-        self.input = siml.Input(Path(CONFIG_DIR, "config.json"))
-        self.window.bind_input(self.input)
-
-        self.renderer = siml.Renderer()
-        self.renderer.set_groups(["ui", "default"])
-
-        display_size = (self.width // self.scale, self.height // self.scale)
-        self.display = pyg.Surface(display_size)
-        self.ui_surf = pyg.Surface(display_size, pyg.SRCALPHA)
-
         self.text = UIText(FONT_DIR)
-
         self.glow_img = pyg.Surface((255, 255))
         self.glow_img.fill((round(174 * 0.2), round(266 * 0.2), round(255 * 0.3)))
 
@@ -158,11 +128,7 @@ class Game(siml.Game):
 
 
 def main() -> None:
-    game = Game(
-        width=1024,
-        height=768,
-        scale=3,
-    )
+    game = Game()
     game.run()
 
 

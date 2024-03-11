@@ -70,7 +70,7 @@ class MGL:
 
     def render_object(
         self,
-        frag_path: Path,
+        frag_path: str,
         vert_shader: str | None = None,
         vao_args: list[str] | None = None,
         buffer: Buffer | None = None
@@ -79,7 +79,7 @@ class MGL:
             vao_args = ["2f 2f", "vert", "texcoord"]
         frag_shader = read_f(frag_path)
         if vert_shader is not None:
-            vert_shader = read_f(Path(vert_shader))
+            vert_shader = read_f(vert_shader)
 
         return RenderObject(
             self,
@@ -102,7 +102,7 @@ class MGL:
         return texture
 
 
-def read_f(path: Path) -> str:
+def read_f(path: str) -> str:
     file = open(path, "r")
     data = file.read()
     file.close()
