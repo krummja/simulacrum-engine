@@ -73,6 +73,11 @@ class Renderer:
         z_level: int = 0,
         group: str = "default"
     ) -> None:
+        """
+        Calls `queue_render` with a default `RenderFunction` specified. Takes
+        `BlitParams` and queues the function with its parameters in a prebuilt
+        `Renderable`.
+        """
         renderable = Renderable[BlitParams](
             render_function=BlitFunction(),
             render_params=params,
@@ -93,6 +98,10 @@ class Renderer:
             self.render_queue[group] = []
 
     def cycle(self, dest_surfaces: dict[str, Surface]) -> dict[str, Surface]:
+        """
+        Process the render queue by iterating over the `Surface` objects in the
+        `dest_surfaces` mapping.
+        """
         self.render_count = 0
 
         for group in dest_surfaces:

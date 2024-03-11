@@ -10,13 +10,18 @@ import random
 import pygame as pyg
 from pygame.locals import *
 
+import pecs_framework as pecs
+
 import simulacrum_engine as siml
 from simulacrum_engine.renderer import Position
 from simulacrum_engine.ui_lib.text import UIText
 
 
 TEST_DIR = Path(__file__).parent.resolve()
-CONFIG = Path(TEST_DIR, "config.json")
+SHADER_DIR = Path(TEST_DIR, "shaders")
+CONFIG_DIR = Path(TEST_DIR, "config")
+TEXTURE_DIR = Path(TEST_DIR, "textures")
+FONT_DIR = Path(TEST_DIR, "fonts")
 
 
 def advance(vec, angle, amt):
@@ -26,7 +31,7 @@ def advance(vec, angle, amt):
 
 
 def load_png(filename: str) -> tuple[pyg.Surface, pyg.Rect]:
-    path = Path(TEST_DIR, filename)
+    path = Path(TEXTURE_DIR, filename)
     try:
         image = pyg.image.load(path)
         if image.get_alpha() is None:
@@ -61,10 +66,10 @@ class Game(siml.Game):
             flags=self.resizable,
             opengl=True,
             fps_cap=60,
-            frag_path=Path(TEST_DIR, "frag.frag"),
+            frag_path=Path(SHADER_DIR, "frag.frag"),
         )
 
-        self.input = siml.Input(CONFIG)
+        self.input = siml.Input(Path(CONFIG_DIR, "config.json"))
         self.window.bind_input(self.input)
 
         self.renderer = siml.Renderer()
@@ -74,7 +79,7 @@ class Game(siml.Game):
         self.display = pyg.Surface(display_size)
         self.ui_surf = pyg.Surface(display_size, pyg.SRCALPHA)
 
-        self.text = UIText(Path(TEST_DIR, "fonts"))
+        self.text = UIText(FONT_DIR)
 
         self.glow_img = pyg.Surface((255, 255))
         self.glow_img.fill((round(174 * 0.2), round(266 * 0.2), round(255 * 0.3)))

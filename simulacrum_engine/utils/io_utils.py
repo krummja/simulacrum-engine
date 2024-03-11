@@ -16,7 +16,6 @@ def read_json(path: str | Path) -> dict[str, Any]:
 
 
 class ResolverFunction(Protocol):
-
     def __call__(self, path: Path) -> Any:
         ...
 
