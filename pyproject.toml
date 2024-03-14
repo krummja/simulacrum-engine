@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simulacrum-engine"
-version = "0.1.0"
+version = "0.1.5c"
 description = ""
 authors = ["Jonathan Crum <jcrum@theobogroup.com>"]
 readme = "README.md"
@@ -16,6 +16,10 @@ pecs-framework = "^1.3.3"
 rich = "^13.7.1"
 tomlkit = "^0.12.4"
 pydantic = "^2.6.3"
+devtools = "^0.12.2"
+ansicolors = "^1.1.8"
+structlog = "^24.1.0"
+pendulum = "^3.0.0"
 
 
 [build-system]

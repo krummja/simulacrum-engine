@@ -1,0 +1,22 @@
+
+[window]
+width = 1024
+height = 768
+title = "Test Game"
+icon_path = "../textures/icon.png"
+fps_cap = 60
+render_scale = 2
+resizable = false
+fullscreen = false
+
+[shaders]
+opengl = true
+fragment_path = "../shaders/frag.frag"
+
+[input]
+quit = "escape"
+
+[ecs]
+enable = true
+component_path = "../ecs/components"
+domain_id = "Test"

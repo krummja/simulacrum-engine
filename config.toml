@@ -1,0 +1,25 @@
+
+[window]
+width = 1024
+height = 768
+title = ""
+icon_path = ""
+fps_cap = 60
+render_scale = 1
+resizable = false
+fullscreen = false
+
+[shaders]
+opengl = false
+fragment_path = ""
+
+[input]
+quit = "escape"
+
+[asset]
+asset_path = ""
+
+[ecs]
+enable = true
+component_path = ""
+domain_id = "default"
