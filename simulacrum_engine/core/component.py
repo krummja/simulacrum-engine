@@ -22,8 +22,20 @@ class EngineComponent(metaclass=ComponentMeta):
         self.engine = engine
         self.emitter = self.engine.emitter
         self.logger = self.engine.logger
+        self._is_booted = self.boot()
+
+    @property
+    def is_booted(self) -> bool:
+        return self._is_booted
 
     def boot(self) -> bool:
+        """
+        Lifecycle method invoked for each component on engine boot.
+
+        Implementation must return `True` by default and `False` only when some
+        specified boot validation has failed (e.g. a needed resource could not be
+        found).
+        """
         raise NotImplementedError("Method has not been implemented.")
 
     def ready(self) -> None:
@@ -34,3 +46,6 @@ class EngineComponent(metaclass=ComponentMeta):
 
     def cycle(self) -> None:
         raise NotImplementedError("Method has not been implemented.")
+
+
+EC = TypeVar("EC", bound=EngineComponent)

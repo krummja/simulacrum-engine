@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from simulacrum_engine.core.component import EngineComponent
 
 import sys
+import pygame as pyg
 
 from simulacrum_engine.core.assets import AssetManager
 from simulacrum_engine.core.config import Config
@@ -18,13 +19,15 @@ from simulacrum_engine.core.rendering import RenderManager
 from simulacrum_engine.core.sound import SoundManager
 from simulacrum_engine.core.window import WindowManager
 
+from simulacrum_engine.core.component import EC
+
 
 class Engine:
 
     def __init__(
         self,
         *,
-        config: Config,
+        config: Config = Config(),
         asset_manager: type[AssetManager] = AssetManager,
         ecs_manager: type[ECSManager] = ECSManager,
         input_manager: type[InputManager] = InputManager,
@@ -40,13 +43,20 @@ class Engine:
 
         self._is_booted = False
 
-        self.initialize_component(asset_manager)
-        self.initialize_component(ecs_manager)
+        self.initialize_component(render_manager)
+        self.initialize_component(window_manager)
         self.initialize_component(input_manager)
+        self.initialize_component(asset_manager)
         self.initialize_component(physics_manager)
         self.initialize_component(sound_manager)
-        self.initialize_component(window_manager)
-        self.initialize_component(render_manager)
+        self.initialize_component(ecs_manager)
+
+    def __getitem__(self, key: type[EC] | str) -> EC:
+        if isinstance(key, str):
+            _component = self.components[key]
+        else:
+            _component = self.components[key.id]
+        return cast(EC, _component)
 
     def initialize_component(self, component: type[EngineComponent]) -> None:
         initialized = component(self)
@@ -61,17 +71,20 @@ class Engine:
             self.quit()
 
     def boot(self) -> None:
-        if all([component.boot() for component in self.components.values()]):
+        if all([component.is_booted for component in self.components.values()]):
             self._is_booted = True
             self.ready()
 
     def ready(self) -> None:
         self.emitter.emit(Events.READY)
+        self.run()
 
     def teardown(self) -> None:
         self.emitter.emit(Events.TEARDOWN)
+        self.quit()
 
     def quit(self) -> None:
+        pyg.quit()
         sys.exit()
 
     def run(self) -> None:
@@ -79,4 +92,6 @@ class Engine:
             self.cycle()
 
     def cycle(self) -> None:
-        pass
+        self.emitter.emit(Events.PRE_UPDATE)
+        self.emitter.emit(Events.UPDATE)
+        self.emitter.emit(Events.POST_UPDATE)

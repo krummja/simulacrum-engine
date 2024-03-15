@@ -5,21 +5,19 @@ if TYPE_CHECKING:
 
 import pecs_framework as pecs
 
+from simulacrum_engine.core.logger import log_boot
 from simulacrum_engine.core.component import EngineComponent
 from simulacrum_engine.core.events import Events
 
 
 class ECSManager(EngineComponent):
 
+    @log_boot
     def boot(self) -> bool:
         return True
 
     def ready(self) -> None:
-        self.emitter.emit(
-            Events.LOG_INFO,
-            message="ECSManager passed readiness check",
-            symbol="success",
-        )
+        pass
 
     def teardown(self) -> None:
         pass

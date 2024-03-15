@@ -1,10 +1,12 @@
 from __future__ import annotations
 from typing import *
 if TYPE_CHECKING:
-    pass
+    from simulacrum_engine.core.config import InputConfig
 
 from .input_method import InputMethod
 
 
 class Mouse(InputMethod):
-    pass
+
+    def setup(self, config: InputConfig) -> None:
+        pass

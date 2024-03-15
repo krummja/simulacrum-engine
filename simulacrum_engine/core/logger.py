@@ -2,12 +2,15 @@ from __future__ import annotations
 from typing import *
 if TYPE_CHECKING:
     from simulacrum_engine.core.engine import Engine
+    from simulacrum_engine.core.component import EngineComponent
 
+import functools
 import structlog
 import colorama
 from colors import color
 from structlog.dev import Column, KeyValueColumnFormatter
 
+from simulacrum_engine.core.component import EC
 from simulacrum_engine.core.events import Events
 
 
@@ -121,3 +124,27 @@ class Logger:
 
     def info(self, message: str, symbol: str | None = None, **extra: Any) -> None:
         self.log.info(message, symbol=symbol, **extra)
+
+
+BootMethod: TypeAlias = Callable[[EC], bool]
+
+def log_boot(boot_method: BootMethod) -> BootMethod:
+    functools.wraps(boot_method)
+    def wrapper(self: EngineComponent):
+        name = self.id
+
+        self.engine.emitter.emit(
+            Events.LOG_INFO,
+            message=f"{name} booting...",
+        )
+
+        boot_result = boot_method(self)
+
+        self.engine.emitter.emit(
+            Events.LOG_INFO,
+            message=f"{name} boot complete.",
+            symbol="success" if boot_result else "error",
+        )
+
+        return boot_result
+    return wrapper

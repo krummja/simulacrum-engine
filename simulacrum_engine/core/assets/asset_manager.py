@@ -19,7 +19,7 @@ class AssetManager(EngineComponent):
             message="AssetManager booting...",
         )
 
-        time.sleep(3)
+        # time.sleep(3)
 
         self.emitter.emit(
             Events.LOG_INFO,

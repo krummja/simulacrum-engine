@@ -79,8 +79,8 @@ class Window:
             self.screen.blit(uniforms["ui"], (0, 0))
 
         pyg.display.flip()
-        self.clock.tick(self.fps_cap)
 
+        self.clock.tick(self.fps_cap)
         self.dt = min(time.time() - self.last_frame, self.dt)
         self.frame_log.append(self.dt)
         self.frame_log = self.frame_log[-60:]

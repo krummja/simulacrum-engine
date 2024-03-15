@@ -20,7 +20,7 @@ class RenderObject:
         fragment: str,
         vertex: str | None = None,
         use_default: bool = False,
-        vao_args: list[str] = ['2f 2f', 'vert', 'texcoord'],
+        vao_args: list[str] | None = None,
         buffer: Buffer | None = None,
     ) -> None:
         self.use_default = use_default
@@ -28,7 +28,7 @@ class RenderObject:
         self.mgl = mgl
         self.frag_raw = fragment
         self.vert_raw = vertex
-        self.vao_args = vao_args
+        self.vao_args = vao_args if vao_args else ['2f 2f', 'vert', 'texcoord']
 
         if not vertex:
             vertex = self.mgl.default_vert
@@ -43,7 +43,7 @@ class RenderObject:
 
         self.vao = self.mgl.ctx.vertex_array(
             self.program,
-            [(buffer, *vao_args)],
+            [(buffer, *self.vao_args)],
         )
 
         self.temp_textures = []

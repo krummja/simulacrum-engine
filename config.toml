@@ -10,8 +10,8 @@ resizable = false
 fullscreen = false
 
 [shaders]
-opengl = false
-fragment_path = ""
+opengl = true
+fragment_path = "./tests/frag.frag"
 
 [input]
 quit = "escape"

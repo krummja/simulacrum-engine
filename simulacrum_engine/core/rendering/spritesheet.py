@@ -1,0 +1,4 @@
+
+
+class Spritesheet:
+    pass

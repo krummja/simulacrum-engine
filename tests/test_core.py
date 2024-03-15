@@ -4,10 +4,22 @@ from rich import inspect
 from pathlib import Path
 
 
-def test_setup() -> None:
-    engine = Engine(config=Config())
-    engine.boot()
+class RenderManagerBoot:
+
+    def __call__(self) -> bool:
+        return True
+
+
+class Game:
+
+    def __init__(self) -> None:
+        self.engine = Engine()
+
+    def start(self) -> None:
+        self.engine.boot()
+        inspect(self.engine)
 
 
 if __name__ == '__main__':
-    test_setup()
+    game = Game()
+    game.start()

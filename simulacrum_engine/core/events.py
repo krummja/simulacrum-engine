@@ -76,6 +76,11 @@ def once(emitter: Emitter, event: str):
 
 class Events(StrEnum):
     LOG_INFO = "LOG_INFO"
+    LOG_ERROR = "LOG_ERROR"
 
     READY = "READY"
     TEARDOWN = "TEARDOWN"
+
+    PRE_UPDATE = "PRE_UPDATE"
+    UPDATE = "UPDATE"
+    POST_UPDATE = "POST_UPDATE"

@@ -3,11 +3,13 @@ from typing import *
 if TYPE_CHECKING:
     pass
 
+from simulacrum_engine.core.logger import log_boot
 from simulacrum_engine.core.component import EngineComponent
 
 
 class PhysicsManager(EngineComponent):
 
+    @log_boot
     def boot(self) -> bool:
         return True
 
