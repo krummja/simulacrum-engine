@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simulacrum-engine"
-version = "0.1.6"
+version = "0.1.8"
 description = ""
 authors = ["Jonathan Crum <jcrum@theobogroup.com>"]
 readme = "README.md"

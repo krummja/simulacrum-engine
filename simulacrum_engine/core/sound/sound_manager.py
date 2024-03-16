@@ -9,7 +9,6 @@ from simulacrum_engine.core.component import EngineComponent
 
 class SoundManager(EngineComponent):
 
-    @log_boot
     def boot(self) -> bool:
         return True
 

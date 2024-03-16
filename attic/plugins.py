@@ -59,13 +59,13 @@ class Plugin(metaclass=PluginRegistry):
     def on_teardown(self) -> None:
         raise NotImplementedError("Method must be implemented")
 
-    def boot(self) -> None:
+    def boot(self, *args: Any, **kwargs: Any) -> None:
         self.on_boot()
 
-    def ready(self) -> None:
+    def ready(self, *args: Any, **kwargs: Any) -> None:
         self.on_ready()
 
-    def teardown(self) -> None:
+    def teardown(self, *args: Any, **kwargs: Any) -> None:
         self.on_teardown()
 
 

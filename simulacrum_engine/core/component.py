@@ -18,17 +18,17 @@ class ComponentMeta(type):
 
 class EngineComponent(metaclass=ComponentMeta):
 
-    def __init__(self, engine: Engine) -> None:
+    def __init__(self, engine: Engine, **kwargs: Any) -> None:
         self.engine = engine
         self.emitter = self.engine.emitter
         self.logger = self.engine.logger
-        self._is_booted = self.boot()
+        self._is_booted = self.boot(**kwargs)
 
     @property
     def is_booted(self) -> bool:
         return self._is_booted
 
-    def boot(self) -> bool:
+    def boot(self, **kwargs: Any) -> bool:
         """
         Lifecycle method invoked for each component on engine boot.
 

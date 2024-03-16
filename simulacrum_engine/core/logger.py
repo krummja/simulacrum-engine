@@ -126,25 +126,33 @@ class Logger:
         self.log.info(message, symbol=symbol, **extra)
 
 
-BootMethod: TypeAlias = Callable[[EC], bool]
 
-def log_boot(boot_method: BootMethod) -> BootMethod:
-    functools.wraps(boot_method)
-    def wrapper(self: EngineComponent):
-        name = self.id
 
-        self.engine.emitter.emit(
-            Events.LOG_INFO,
-            message=f"{name} booting...",
-        )
+class BootParams(TypedDict):
+    pass
 
-        boot_result = boot_method(self)
 
-        self.engine.emitter.emit(
-            Events.LOG_INFO,
-            message=f"{name} boot complete.",
-            symbol="success" if boot_result else "error",
-        )
+P = TypeVar("P", bound=BootParams, covariant=True)
 
+BootFunction: TypeAlias = Callable[[EC, P], bool]
+
+M = TypeVar("M", bound=BootFunction)
+
+class BootMethod(Protocol[M, P]):
+    __call__: M
+
+
+def log_boot(boot_method: BootMethod[M, P]) -> BootMethod:
+
+    # functools.wraps(boot_method)
+    def method_proxy(self: EngineComponent, params: BootParams | None = None) -> bool:
+        boot_result = boot_method(self, params)
         return boot_result
-    return wrapper
+
+        # self.engine.emitter.emit(
+        #     Events.LOG_INFO,
+        #     message=f"{self.id} booted.",
+        #     symbol="success" if boot_result else "error",
+        # )
+
+    return method_proxy

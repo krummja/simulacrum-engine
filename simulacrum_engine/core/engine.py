@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 
 import sys
 import pygame as pyg
+from devtools import debug
 
 from simulacrum_engine.core.assets import AssetManager
 from simulacrum_engine.core.config import Config
@@ -35,11 +36,14 @@ class Engine:
         sound_manager: type[SoundManager] = SoundManager,
         window_manager: type[WindowManager] = WindowManager,
         render_manager: type[RenderManager] = RenderManager,
+        init_mapping: dict[str, dict[str, Any]] | None = None
     ) -> None:
         self.config = config
         self.emitter = Emitter()
         self.logger = Logger(self)
         self.components: dict[str, EngineComponent] = {}
+
+        init_mapping = init_mapping if init_mapping else {}
 
         self._is_booted = False
 
@@ -49,7 +53,9 @@ class Engine:
         self.initialize_component(asset_manager)
         self.initialize_component(physics_manager)
         self.initialize_component(sound_manager)
-        self.initialize_component(ecs_manager)
+
+        ecs_params = init_mapping.get(ECSManager.id, {})
+        self.initialize_component(ecs_manager, **ecs_params)
 
     def __getitem__(self, key: type[EC] | str) -> EC:
         if isinstance(key, str):
@@ -58,8 +64,12 @@ class Engine:
             _component = self.components[key.id]
         return cast(EC, _component)
 
-    def initialize_component(self, component: type[EngineComponent]) -> None:
-        initialized = component(self)
+    def initialize_component(
+        self,
+        component: type[EngineComponent],
+        **init_kwargs: Any,
+    ) -> None:
+        initialized = component(self, **init_kwargs)
         self.emitter.on(Events.READY, initialized.ready)
         self.emitter.on(Events.TEARDOWN, initialized.teardown)
         self.components[initialized.id] = initialized

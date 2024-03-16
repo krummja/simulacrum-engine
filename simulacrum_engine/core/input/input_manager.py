@@ -14,7 +14,6 @@ from .mouse import Mouse
 
 class InputManager(EngineComponent):
 
-    @log_boot
     def boot(self) -> bool:
         self.config = self.engine.config.input
         self.keyboard = Keyboard(self)

@@ -37,7 +37,7 @@ def recursive_file_op(
     return data
 
 
-def load_image(path: Path, alpha: bool = False, colorkey=None):
+def load_image(path: Path, alpha: bool = False, colorkey=None) -> pyg.Surface:
     if alpha:
         image = pyg.image.load(path).convert_alpha()
     else:

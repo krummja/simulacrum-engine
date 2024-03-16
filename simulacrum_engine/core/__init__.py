@@ -12,6 +12,7 @@ from .component import EngineComponent
 from .input import InputManager
 from .physics import PhysicsManager
 from .rendering import RenderManager
+from .rendering.color import Color
 from .sound import SoundManager
 from .window import WindowManager
 
@@ -32,4 +33,5 @@ __all__ = [
     "RenderManager",
     "SoundManager",
     "WindowManager",
+    "Color",
 ]

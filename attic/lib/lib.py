@@ -35,9 +35,9 @@ class GetOrCreateMetadataMap:
 
 
 class ModuleMetadata(TypedDict):
-    imports: NotRequired[list[Any]]
-    providers: NotRequired[list[Provider]]
-    exports: NotRequired[list[Any]]
+    imports: NotRequired[list[ModuleMeta]]
+    providers: NotRequired[list[type[Provider]]]
+    exports: NotRequired[list[type[Provider]]]
 
 
 class ModuleDecorator:
@@ -46,32 +46,75 @@ class ModuleDecorator:
         def wrapper(target: type):
             _target = target()
             for key in metadata:
-                setattr(target, key, metadata[key])
-            return target
+                setattr(_target, key, metadata[key])
+            return _target
         return wrapper
 
 
 Module = ModuleDecorator()
 
 
+TEST = "TEST"
 class TestProvider:
-    provide = "TEST"
-    use_value: str
+    provide = TEST
+    use_value: str = "test value"
+
+
+class ModuleMeta(type):
+
+    def __new__(cls, name, bases, namespace) -> ModuleMeta:
+        clsobj = super().__new__(cls, name, bases, namespace)
+        return clsobj
+
+
+class OtherService:
+
+    def __init__(self, test_value: TestProvider) -> None:
+        self.test_value = test_value.use_value
+
+
+OTHER_SERVICE = "OTHER_SERVICE"
+class OtherServiceProvider:
+    provide = OTHER_SERVICE
+    use_class = OtherService
 
 
 @Module({
     "imports": [],
     "providers": [
-        TestProvider(),
+        OtherServiceProvider,
     ],
     "exports": [],
 })
-class SomeModule:
+class OtherModule(metaclass=ModuleMeta):
+    pass
 
-    def __init__(self, test_provider: TestProvider) -> None:
-        self.test_provider = test_provider
+
+@Module({
+    "imports": [
+        OtherModule,
+    ],
+    "providers": [
+        TestProvider,
+    ],
+    "exports": [
+        TestProvider,
+    ],
+})
+class SomeModule(metaclass=ModuleMeta):
+    pass
+
+
+@Module({
+    "imports": [
+        OtherModule,
+        SomeModule,
+    ],
+})
+class AppModule(metaclass=ModuleMeta):
+    pass
 
 
 if __name__ == '__main__':
-    module = SomeModule()
-    inspect(module, all=True)
+    app = AppModule()
+    inspect(app, all=True)

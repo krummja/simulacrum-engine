@@ -14,7 +14,6 @@ from .renderer import Renderer
 
 class RenderManager(EngineComponent):
 
-    @log_boot
     def boot(self) -> bool:
         self.window_config = self.engine.config.window
 
@@ -26,15 +25,18 @@ class RenderManager(EngineComponent):
         self._renderer = Renderer()
 
         # PyGame Surfaces that the renderer blits to.
-        # In opengl mode, they act as a buffer that are then presented to the
-        # gl_context
+        # In opengl mode, they act as a buffer that are then presented to the gl_context
         self._uniforms = {
-            "surface": pyg.Surface(self.display_size),
+            "default": pyg.Surface(self.display_size),
             "ui_surf": pyg.Surface(self.display_size, pyg.SRCALPHA),
         }
 
         self.emitter.on(Events.UPDATE, self.cycle)
         return True
+
+    @property
+    def renderer(self) -> Renderer:
+        return self._renderer
 
     @property
     def uniforms(self) -> dict[str, pyg.Surface]:
@@ -47,6 +49,6 @@ class RenderManager(EngineComponent):
         pass
 
     def cycle(self) -> None:
-        self.uniforms["surface"].fill((21, 21, 21))
+        self.uniforms["default"].fill((21, 21, 21))
         self.uniforms["ui_surf"].fill((0, 0, 0, 0))
         self._renderer.cycle(self.uniforms)

@@ -13,7 +13,6 @@ from .window import Window
 
 class WindowManager(EngineComponent):
 
-    @log_boot
     def boot(self) -> bool:
         self.window = Window(
             self.engine.config.window,
@@ -32,6 +31,6 @@ class WindowManager(EngineComponent):
 
     def cycle(self) -> None:
         self.window.cycle({
-            "surface": self.uniforms["surface"],
+            "surface": self.uniforms["default"],
             "ui_surf": self.uniforms["ui_surf"],
         })
