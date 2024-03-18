@@ -19,18 +19,42 @@ class InputManager(EngineComponent):
         self.keyboard = Keyboard(self)
         self.mouse = Mouse(self)
 
+        self.keyboard.setup(self.config)
+        self.mouse.setup(self.config)
+
         self.emitter.on(Events.POST_UPDATE, self.cycle)
         return True
 
-    def ready(self) -> None:
-        pass
-
-    def teardown(self) -> None:
-        pass
-
     def cycle(self) -> None:
         self.keyboard.update()
+        self.mouse.update()
 
         for event in pyg.event.get():
-            if event.type == pyg.QUIT:
+            self.process_event(event)
+
+    def process_event(self, event: pyg.event.Event):
+        match event.type:
+            case pyg.QUIT:
                 self.engine.teardown()
+
+            case pyg.MOUSEBUTTONDOWN:
+                pass
+
+            case pyg.MOUSEBUTTONUP:
+                pass
+
+            case pyg.KEYDOWN:
+                if event.key in [pyg.K_LSHIFT, pyg.K_RSHIFT]:
+                    self.keyboard.shift = True
+
+                for mapping in self.config:
+                    if event.key == pyg.key.key_code(mapping[1]):
+                        self.keyboard.states[mapping[1]].press()
+
+            case pyg.KEYUP:
+                for mapping in self.config:
+                    if event.key == pyg.key.key_code(mapping[1]):
+                        self.keyboard.states[mapping[1]].unpress()
+
+                if event.key in [pyg.K_LSHIFT, pyg.K_RSHIFT]:
+                    self.keyboard.shift = False

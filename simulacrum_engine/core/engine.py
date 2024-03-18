@@ -19,6 +19,7 @@ from simulacrum_engine.core.physics import PhysicsManager
 from simulacrum_engine.core.rendering import RenderManager
 from simulacrum_engine.core.sound import SoundManager
 from simulacrum_engine.core.window import WindowManager
+from simulacrum_engine.core.ui.ui_manager import UIManager
 
 from simulacrum_engine.core.component import EC
 
@@ -36,6 +37,7 @@ class Engine:
         sound_manager: type[SoundManager] = SoundManager,
         window_manager: type[WindowManager] = WindowManager,
         render_manager: type[RenderManager] = RenderManager,
+        ui_manager: type[UIManager] = UIManager,
         init_mapping: dict[str, dict[str, Any]] | None = None
     ) -> None:
         self.config = config
@@ -51,6 +53,7 @@ class Engine:
         self.initialize_component(window_manager)
         self.initialize_component(input_manager)
         self.initialize_component(asset_manager)
+        self.initialize_component(ui_manager)
         self.initialize_component(physics_manager)
         self.initialize_component(sound_manager)
 
@@ -82,18 +85,24 @@ class Engine:
 
     def boot(self) -> None:
         if all([component.is_booted for component in self.components.values()]):
+            self.emitter.emit(Events.LOG_INFO, message="Engine boot", symbol="success")
             self._is_booted = True
             self.ready()
+        else:
+            self.emitter.emit(Events.LOG_INFO, message="Engine boot", symbol="error")
 
     def ready(self) -> None:
+        self.emitter.emit(Events.LOG_INFO, message="Engine ready", symbol="success")
         self.emitter.emit(Events.READY)
         self.run()
 
     def teardown(self) -> None:
+        self.emitter.emit(Events.LOG_INFO, message="Shutting down...")
         self.emitter.emit(Events.TEARDOWN)
         self.quit()
 
     def quit(self) -> None:
+        self.emitter.emit(Events.LOG_INFO, message="Shutdown complete. Goodbye!")
         pyg.quit()
         sys.exit()
 

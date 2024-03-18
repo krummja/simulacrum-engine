@@ -38,14 +38,14 @@ class EngineComponent(metaclass=ComponentMeta):
         """
         raise NotImplementedError("Method has not been implemented.")
 
-    def ready(self) -> None:
-        raise NotImplementedError("Method has not been implemented.")
-
-    def teardown(self) -> None:
-        raise NotImplementedError("Method has not been implemented.")
-
     def cycle(self) -> None:
         raise NotImplementedError("Method has not been implemented.")
+
+    def ready(self) -> None:
+        pass
+
+    def teardown(self) -> None:
+        pass
 
 
 EC = TypeVar("EC", bound=EngineComponent)

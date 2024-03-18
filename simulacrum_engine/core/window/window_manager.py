@@ -23,14 +23,16 @@ class WindowManager(EngineComponent):
         self.uniforms = self.engine[RenderManager].uniforms
         return True
 
-    def ready(self) -> None:
-        pass
-
-    def teardown(self) -> None:
-        pass
-
     def cycle(self) -> None:
         self.window.cycle({
             "surface": self.uniforms["default"],
             "ui_surf": self.uniforms["ui_surf"],
         })
+
+    @property
+    def delta(self) -> float:
+        return self.window.frame_manager.frame_delta
+
+    @property
+    def fps(self) -> float:
+        return self.window.frame_manager.fps

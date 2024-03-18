@@ -13,3 +13,6 @@ class InputMethod:
 
     def setup(self, config: InputConfig) -> None:
         raise NotImplementedError("Method has no implementation.")
+
+    def update(self) -> None:
+        raise NotImplementedError("Method has no implementation.")

@@ -16,18 +16,19 @@ class Renderable(pecs.Component):
     foreground: Color
     background: Color
     alpha: bool = False
+    scale: float = 1.0
 
     @cached_property
     def surface(self) -> pyg.Surface:
-        return pyg.Surface((255, 255))
+        return pyg.Surface((255 * self.scale, 255 * self.scale))
 
     def __post_init__(self) -> None:
         asset = load_image(self.asset_path, alpha=True)
-        flags = pyg.BLEND_RGBA_MULT if self.alpha else 0
+        asset = pyg.transform.scale(asset, (
+            asset.get_width() * self.scale,
+            asset.get_height() * self.scale,
+        ))
 
+        flags = pyg.BLEND_RGBA_MULT if self.alpha else 0
         self.surface.fill(self.foreground)
-        self.surface.blit(
-            asset,
-            (0, 0),
-            special_flags=flags,
-        )
+        self.surface.blit(asset, (0, 0), special_flags=flags)

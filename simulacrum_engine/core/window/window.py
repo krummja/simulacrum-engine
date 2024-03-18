@@ -16,12 +16,12 @@ class FrameManager:
     def __init__(self, window: Window) -> None:
         self.window = window
         self.time = time.time()
+        self.clock = pyg.time.Clock()
+
         self.frames = 0
         self.frame_log = [0.1]
-
-        self.clock = pyg.time.Clock()
         self.last_frame = time.time()
-        self.delta = 0.1
+        self.frame_delta = 0.1
 
     @property
     def fps(self) -> float:
@@ -29,8 +29,8 @@ class FrameManager:
 
     def cycle(self) -> None:
         self.clock.tick(self.window.fps_cap)
-        self.delta = min(time.time() - self.last_frame, self.delta)
-        self.frame_log.append(self.delta)
+        self.frame_delta = min(time.time() - self.last_frame, self.frame_delta)
+        self.frame_log.append(self.frame_delta)
         self.frame_log = self.frame_log[-60:]
         self.last_frame = time.time()
 

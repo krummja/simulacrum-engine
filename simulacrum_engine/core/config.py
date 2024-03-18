@@ -23,6 +23,7 @@ class WindowConfig(BaseModel):
     render_scale: int | float = 1
     resizable: bool = False
     fullscreen: bool = False
+    debug: bool = False
 
 
 class ShaderConfig(BaseModel):
@@ -32,6 +33,15 @@ class ShaderConfig(BaseModel):
 
 class InputConfig(BaseModel):
     quit: str = "escape"
+    up: str = "W"
+    left: str = "A"
+    down: str = "S"
+    right: str = "D"
+    jump: str = "space"
+    action_1: str = "R"
+    action_2: str = "F"
+    util_1: str = "Q"
+    util_2: str = "E"
 
 
 class AssetConfig(BaseModel):

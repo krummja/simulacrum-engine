@@ -20,6 +20,7 @@ class WindowConfig(BaseModel):
     render_scale: int | float = 1
     resizable: bool = False
     fullscreen: bool = False
+    debug: bool = False
 
 
 class ShaderConfig(BaseModel):

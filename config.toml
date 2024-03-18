@@ -1,13 +1,14 @@
 
 [window]
-width = 1024
-height = 768
+width = 1440
+height = 900
 title = ""
 icon_path = ""
 fps_cap = 60
 render_scale = 1
 resizable = false
 fullscreen = false
+debug = true
 
 [shaders]
 opengl = true
@@ -15,9 +16,18 @@ fragment_path = "./tests/frag.frag"
 
 [input]
 quit = "escape"
+up = "W"
+left = "A"
+down = "S"
+right = "D"
+jump = "space"
+action_1 = "R"
+action_2 = "F"
+util_1 = "Q"
+util_2 = "E"
 
 [asset]
-asset_path = ""
+asset_path = "./tests/assets/"
 
 [ecs]
 enable = true

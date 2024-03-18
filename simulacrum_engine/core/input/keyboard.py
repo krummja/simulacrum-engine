@@ -6,6 +6,8 @@ if TYPE_CHECKING:
 import time
 import pygame as pyg
 
+from devtools import debug
+
 from .input_method import InputMethod
 
 
@@ -35,8 +37,8 @@ class Keyboard(InputMethod):
 
     def setup(self, config: InputConfig) -> None:
         self.text_buffer = None
-        self.config = config.model_dump().values()
-        self.states = {pyg.key.key_code(value): KeyState() for value in self.config}
+        self.config = config.model_dump().items()
+        self.states = {value: KeyState() for _, value in self.config}
 
         self.repeat_rate = 0.2
         self.repeat_delay = 0.5
@@ -44,13 +46,25 @@ class Keyboard(InputMethod):
         self.shift = False
 
     def pressed(self, key: str) -> bool:
-        return self.states[key].just_pressed if key in self.states else False
+        return (
+            self.states[key].just_pressed
+            if key in self.states
+            else False
+        )
 
     def holding(self, key: str) -> bool:
-        return self.states[key].pressed if key in self.states else False
+        return (
+            self.states[key].pressed
+            if key in self.states
+            else False
+        )
 
     def released(self, key: str) -> bool:
-        return self.states[key].just_released if key in self.states else False
+        return (
+            self.states[key].just_released
+            if key in self.states
+            else False
+        )
 
     def movement(self):
         pass
