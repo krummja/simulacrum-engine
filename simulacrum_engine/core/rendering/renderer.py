@@ -69,8 +69,9 @@ class Renderer:
         group: str = "default"
     ) -> None:
         """
-        Calls `queue_render` with a default `RenderFunction` specified. Takes
-        `BlitParams` and queues the function with its parameters in a prebuilt
+        Calls `queue_render` with a default `RenderFunction` specified.
+
+        Takes `BlitParams` and queues the function with its parameters in a prebuilt
         `Renderable`.
         """
         renderable = Renderable[BlitParams](

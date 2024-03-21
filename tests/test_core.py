@@ -7,18 +7,12 @@ from rich import inspect
 
 import pygame as pyg
 from simulacrum_engine.core import *
-from simulacrum_engine.core.ecs.ecs_manager import Loop
+from simulacrum_engine.core.ecs import Loop
+from simulacrum_engine.core.ecs import System
 from tests import components
 
 
-class SimulacrumSystem(BaseSystem):
-
-    def __init__(self, engine: Engine, loop: pecs.base_system.Loop) -> None:
-        self.engine = engine
-        super().__init__(loop)
-
-
-class ControllerSystem(SimulacrumSystem):
+class ControllerSystem(System):
 
     def initialize(self) -> None:
         self.input = self.engine[InputManager]
@@ -30,7 +24,7 @@ class ControllerSystem(SimulacrumSystem):
     def update(self) -> None:
         controllers = self._queries["controllers"].result
 
-        speed = 150
+        speed = 200
         dt = self.engine[WindowManager].delta
 
         for entity in controllers:
@@ -56,7 +50,7 @@ class ControllerSystem(SimulacrumSystem):
             position.y += move_direction.y * speed * dt
 
 
-class RenderSystem(SimulacrumSystem):
+class RenderSystem(System):
 
     def initialize(self) -> None:
         self.renderer = self.engine[RenderManager].renderer
@@ -73,6 +67,8 @@ class RenderSystem(SimulacrumSystem):
 
             if renderable.surface is None:
                 continue
+
+            renderable.update()
 
             self.renderer.blit(
                 params={
@@ -91,11 +87,11 @@ class ECSLoop(Loop):
 
         player = self.ecs.entities.create("player")
         self.ecs.components.attach(player, components.Renderable, {
-            "asset_path": Path("./tests/assets/light.png"),
+            "asset_path": Path("./tests/assets/textures/player/idle"),
             "foreground": Color(255, 255, 255),
             "background": Color(0, 0, 0),
             "alpha": True,
-            "scale": 0.25,
+            "scale": 4.0,
         })
         self.ecs.components.attach(player, components.Controller)
         self.ecs.components.attach(player, components.Position, {
@@ -112,9 +108,7 @@ class ECSLoop(Loop):
     def update(self) -> None:
         self.controller_system.update()
         self.render_system.update()
-
-        for _ in range(20):
-            self.tick()
+        self.tick()
 
     def post_update(self) -> None:
         self.last_post_tick = time.time()

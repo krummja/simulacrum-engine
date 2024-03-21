@@ -7,13 +7,23 @@ import os
 import pygame as pyg
 from pathlib import Path
 
+from simulacrum_engine.core.rendering.color import Color
+
+
+T = TypeVar("T", covariant=True)
+
+
+class ResolverFunction(Protocol, Generic[T]):
+    def __call__(self, path: Path) -> T:
+        ...
+
 
 def recursive_file_op(
     path: Path,
-    resolver_func: Callable[[Path], Any],
+    resolver_func: ResolverFunction[T],
     *,
     filetype: str | None = None
-) -> dict[str, Any]:
+) -> dict[str, T]:
     data = {}
     base_path = path.parts
 
@@ -47,9 +57,13 @@ def load_image(path: Path, alpha: bool = False, colorkey=None) -> pyg.Surface:
     return image
 
 
-def load_image_directory(path: Path, alpha: bool = False, colorkey=None):
+def load_image_directory(
+    path: Path,
+    alpha: bool = False,
+    colorkey: Color | None = None,
+) -> dict[str, pyg.Surface]:
     return recursive_file_op(
         path,
-        lambda path: load_image(path, alpha, colorkey),
+        (lambda path: load_image(path, alpha, colorkey)),
         filetype="png",
     )

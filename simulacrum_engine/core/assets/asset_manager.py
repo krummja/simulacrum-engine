@@ -10,11 +10,17 @@ from simulacrum_engine.core.events import Events
 from simulacrum_engine.core.logger import log_boot
 
 from .asset_utils import recursive_file_op
+from .asset import Asset
+from .asset import AssetType
+
+
+AssetMap: TypeAlias = dict[AssetType, dict[str, list[Asset]]]
 
 
 class AssetManager(EngineComponent):
 
     def boot(self) -> bool:
+        self.assets: AssetMap = {}
         return True
 
     def ready(self) -> None:

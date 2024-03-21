@@ -28,6 +28,7 @@ def default_vert_shader() -> str:
         }
     """)
 
+
 def default_frag_shader() -> str:
     return dedent("""//glsl
         # version 330

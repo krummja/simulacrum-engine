@@ -2,7 +2,7 @@
 [window]
 width = 1440
 height = 900
-title = ""
+title = "Test Game"
 icon_path = ""
 fps_cap = 60
 render_scale = 1
