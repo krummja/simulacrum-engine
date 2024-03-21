@@ -44,7 +44,7 @@ class RenderObject:
         )
 
         self.temp_textures: list[mgl.Texture] = []
-        self.debug = False
+
     def update(self, uniforms: dict[str, Uniform] | None = None) -> None:
         if uniforms is None:
             uniforms = {}
