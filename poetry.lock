@@ -719,6 +719,17 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "python-statemachine"
+version = "2.1.2"
+description = "Python Finite State Machines made easy."
+optional = false
+python-versions = ">=3.7,<3.13"
+files = [
+    {file = "python_statemachine-2.1.2-py3-none-any.whl", hash = "sha256:d7e369d5da5b9007cc7cf5eb7a1b169081e2f4b7d30b6415fc122858fb7696ec"},
+    {file = "python_statemachine-2.1.2.tar.gz", hash = "sha256:0b0dd8b28738b53f14391b06d5072cd5e72259da5ae23574d3d4f5e6dd366663"},
+]
+
+[[package]]
 name = "rich"
 version = "13.7.1"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
@@ -776,6 +787,38 @@ files = [
 ]
 
 [[package]]
+name = "transitions"
+version = "0.9.0"
+description = "A lightweight, object-oriented Python state machine implementation with many extensions."
+optional = false
+python-versions = "*"
+files = [
+    {file = "transitions-0.9.0-py2.py3-none-any.whl", hash = "sha256:5687ee8c6a3200830e44f988d16b0045f53293f7a873002d7bff70852331a078"},
+    {file = "transitions-0.9.0.tar.gz", hash = "sha256:2f54d11bdb225779d7e729011e93a9fb717668ce3dc65f8d4f5a5d7ba2f48e10"},
+]
+
+[package.dependencies]
+six = "*"
+
+[package.extras]
+diagrams = ["pygraphviz"]
+test = ["pytest"]
+
+[[package]]
+name = "treeswift"
+version = "1.1.40"
+description = "TreeSwift: Fast tree module for Python 2 and 3"
+optional = false
+python-versions = "*"
+files = [
+    {file = "treeswift-1.1.40-py2.py3-none-any.whl", hash = "sha256:daecf9a3c9fd0e209c18d482a5dd66a20b3d33bddfb064947de7cfe5b3bb2cf8"},
+    {file = "treeswift-1.1.40.tar.gz", hash = "sha256:51c1bf1f0455866f10980d042831d4c1c244d4861808eb53d7730db99279ec14"},
+]
+
+[package.extras]
+dev = ["check-manifest"]
+
+[[package]]
 name = "typing-extensions"
 version = "4.10.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -799,5 +842,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.11"
-content-hash = "5fdc1e24a70f021a81f6f72be3ae92b07926439b2f25f67ae27c0b083f7291ab"
+python-versions = ">=3.11,<3.13"
+content-hash = "2cd73c226f9bfc0c48ad284dc541945d229798a5553a930a2209353224fe9969"

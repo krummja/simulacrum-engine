@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Iterator
+from typing import *
 from dataclasses import dataclass, field
 from functools import cached_property
 from collections import OrderedDict
@@ -15,6 +15,7 @@ from simulacrum_engine.core.assets.asset_utils import load_image_directory
 from devtools import debug
 
 
+# TODO Frame-by-frame interpolation instead of simple delays of animations
 class RenderIterable(Iterable):
 
     def __init__(
@@ -52,36 +53,56 @@ class Renderable(pecs.Component):
     asset_path: Path
     foreground: Color
     background: Color
-    alpha: bool = False
+    width: int = 12
+    height: int = 18
+    alpha: bool = True
     scale: float = 1.0
 
     @cached_property
     def surface(self) -> pyg.Surface:
-        return pyg.Surface((12 * self.scale, 18 * self.scale))
+        return pyg.Surface((self.width * self.scale, self.height * self.scale))
 
-    @property
-    def assets(self) -> RenderIterable:
-        return self._assets
+    # @property
+    # def animation_map(self) -> AnimationMap:
+    #     return self._animation_map
 
-    @assets.setter
-    def assets(self, value: RenderIterable) -> None:
-        self._assets = value
+    # @animation_map.setter
+    # def animation_map(self, value: AnimationMap) -> None:
+    #     self._animation_map = value
+
+    # @property
+    # def animation(self) -> RenderIterable:
+    #     return self._assets
+
+    # @animation.setter
+    # def animation(self, value: RenderIterable) -> None:
+    #     self._assets = value
 
     def __post_init__(self) -> None:
-        self.assets = RenderIterable([], 30)
-
-        for texture in load_image_directory(self.asset_path).values():
-            self.assets.append(texture)
-
         self.surface.fill(self.foreground)
+        animations = load_image_directory(self.asset_path, self.alpha)
+
+        self.animations = {}
+
+        # for anim_key, mapping in animations.items():
+        #     for frame_key, surface in mapping:
+        #         self.animations[frame_key]
+
+        # self.animations = {
+        #     anim_key: RenderIterable(list(anim_dict.values()))
+        #     for anim_key, anim_dict in animations.items()
+        # }
+        # debug(self.animations)
 
     def update(self) -> None:
-        self.surface.fill(self.foreground)
-        asset = next(self.assets)
-        asset = pyg.transform.scale(asset, (
-            asset.get_width() * self.scale,
-            asset.get_height() * self.scale,
-        ))
+        pass
+        # self.surface.fill(self.foreground)
 
-        flags = pyg.BLEND_RGBA_MULT if self.alpha else 0
-        self.surface.blit(asset, (0, 0), special_flags=flags)
+        # frame = next(self.animation)
+        # frame = pyg.transform.scale(frame, (
+        #     frame.get_width() * self.scale,
+        #     frame.get_height() * self.scale,
+        # ))
+
+        # flags = pyg.BLEND_RGBA_MULT if self.alpha else 0
+        # self.surface.blit(frame, (0, 0), special_flags=flags)

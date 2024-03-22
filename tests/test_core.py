@@ -7,6 +7,8 @@ from rich import inspect
 
 import pygame as pyg
 from simulacrum_engine.core import *
+from simulacrum_engine.core.assets import Spritesheet
+from simulacrum_engine.core.assets import asset_utils
 from simulacrum_engine.core.ecs import Loop
 from simulacrum_engine.core.ecs import System
 from tests import components
@@ -87,7 +89,7 @@ class ECSLoop(Loop):
 
         player = self.ecs.entities.create("player")
         self.ecs.components.attach(player, components.Renderable, {
-            "asset_path": Path("./tests/assets/textures/player/idle"),
+            "asset_path": Path("./tests/assets/animations/player"),
             "foreground": Color(255, 255, 255),
             "background": Color(0, 0, 0),
             "alpha": True,
