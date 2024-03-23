@@ -1,17 +1,32 @@
+from __future__ import annotations
+from typing import *
+if TYPE_CHECKING:
+    pass
+
 from pecs_framework import Loader, BaseSystem
 import pecs_framework as pecs
+
+from functools import cached_property
 
 import time
 from pathlib import Path
 from rich import inspect
+from enum import StrEnum
 
 import pygame as pyg
-from simulacrum_engine.core import *
-from simulacrum_engine.core.assets import Spritesheet
-from simulacrum_engine.core.assets import asset_utils
-from simulacrum_engine.core.ecs import Loop
-from simulacrum_engine.core.ecs import System
+from simulacrum_engine import *
+from simulacrum_engine.assets import Spritesheet
+from simulacrum_engine.assets import asset_utils
+from simulacrum_engine.ecs.loop import Loop
+from simulacrum_engine.ecs.system import System
+
 from tests import components
+from tests import ui
+
+
+class ControlBinding(NamedTuple):
+    key: str
+    direction: tuple[Literal["x"] | Literal["y"], int]
 
 
 class ControllerSystem(System):
@@ -23,6 +38,15 @@ class ControllerSystem(System):
             components.Position,
         ])
 
+    @cached_property
+    def bindings(self) -> list[ControlBinding]:
+        return [
+            ControlBinding("W", ("y", -1)),
+            ControlBinding("A", ("x", -1)),
+            ControlBinding("S", ("y", 1)),
+            ControlBinding("D", ("x", 1)),
+        ]
+
     def update(self) -> None:
         controllers = self._queries["controllers"].result
 
@@ -33,20 +57,25 @@ class ControllerSystem(System):
             position = entity[components.Position]
             input_vector = pyg.Vector2(0, 0)
 
-            if self.input.keyboard.holding("W"):
-                input_vector.y = -1
-            if self.input.keyboard.holding("S"):
-                input_vector.y = 1
-            if self.input.keyboard.holding("A"):
-                input_vector.x = -1
-            if self.input.keyboard.holding("D"):
-                input_vector.x = 1
+            for binding in self.bindings:
+                if self.input.keyboard.pressed(binding.key):
+                    entity.fire_event("move_pressed", data={
+                        "direction": binding.direction,
+                    })
+
+                if self.input.keyboard.holding(binding.key):
+                    setattr(input_vector, *binding.direction)
+
+                if self.input.keyboard.released(binding.key):
+                    entity.fire_event("move_released", data={
+                        "direction": binding.direction,
+                    })
 
             move_direction = pyg.Vector2(input_vector.x, input_vector.y)
             magnitude = move_direction.magnitude()
 
             if magnitude != 0:
-                move_direction.normalize()
+                move_direction = move_direction.normalize()
 
             position.x += move_direction.x * speed * dt
             position.y += move_direction.y * speed * dt
@@ -81,25 +110,30 @@ class RenderSystem(System):
             )
 
 
+def setup_player(ecs: pecs.Engine) -> pecs.Entity:
+    player = ecs.entities.create("player")
+    ecs.components.attach(player, components.Renderable, {
+        "asset_path": Path("./tests/assets/animations/player"),
+        "foreground": Color(255, 255, 255),
+        "background": Color(0, 0, 0),
+        "alpha": True,
+        "scale": 4.0,
+    })
+    ecs.components.attach(player, components.Controller)
+    ecs.components.attach(player, components.Position, {
+        "x": 30,
+        "y": 30,
+    })
+    return player
+
+
 class ECSLoop(Loop):
 
     def initialize(self) -> None:
         self.render_system = RenderSystem(self.engine, self)
         self.controller_system = ControllerSystem(self.engine, self)
 
-        player = self.ecs.entities.create("player")
-        self.ecs.components.attach(player, components.Renderable, {
-            "asset_path": Path("./tests/assets/animations/player"),
-            "foreground": Color(255, 255, 255),
-            "background": Color(0, 0, 0),
-            "alpha": True,
-            "scale": 4.0,
-        })
-        self.ecs.components.attach(player, components.Controller)
-        self.ecs.components.attach(player, components.Position, {
-            "x": 30,
-            "y": 30,
-        })
+        setup_player(self.ecs)
 
     def teardown(self) -> None:
         pass
@@ -116,14 +150,39 @@ class ECSLoop(Loop):
         self.last_post_tick = time.time()
 
 
+class UILoop(Loop):
+
+    def initialize(self) -> None:
+        pass
+
+    def teardown(self) -> None:
+        pass
+
+    def pre_update(self) -> None:
+        pass
+
+    def update(self) -> None:
+        self.tick()
+
+    def post_update(self) -> None:
+        pass
+
+
 class Game:
 
     def __init__(self) -> None:
         self.engine = Engine(
+            config=Config(
+                config_path=Path("./tests/")
+            ),
             init_mapping={
                 ECSManager.id: {
                     "loader": Loader(components),
                     "loop": ECSLoop,
+                },
+                UIManager.id: {
+                    "loader": Loader(ui),
+                    "loop": UILoop,
                 }
             }
         )

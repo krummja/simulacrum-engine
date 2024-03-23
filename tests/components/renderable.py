@@ -1,21 +1,15 @@
 from __future__ import annotations
 from typing import *
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import cached_property
-from collections import OrderedDict
 import pecs_framework as pecs
 
 from pathlib import Path
 import pygame as pyg
 
-from simulacrum_engine.core.rendering.color import Color
-from simulacrum_engine.core.assets.asset_utils import load_image
-from simulacrum_engine.core.assets.asset_utils import load_image_directory
-
-from devtools import debug
+from simulacrum_engine.rendering.color import Color
 
 
-# TODO Frame-by-frame interpolation instead of simple delays of animations
 class RenderIterable(Iterable):
 
     def __init__(
@@ -62,41 +56,33 @@ class Renderable(pecs.Component):
     def surface(self) -> pyg.Surface:
         return pyg.Surface((self.width * self.scale, self.height * self.scale))
 
-    # @property
-    # def animation_map(self) -> AnimationMap:
-    #     return self._animation_map
-
-    # @animation_map.setter
-    # def animation_map(self, value: AnimationMap) -> None:
-    #     self._animation_map = value
-
-    # @property
-    # def animation(self) -> RenderIterable:
-    #     return self._assets
-
-    # @animation.setter
-    # def animation(self, value: RenderIterable) -> None:
-    #     self._assets = value
-
     def __post_init__(self) -> None:
         self.surface.fill(self.foreground)
-        animations = load_image_directory(self.asset_path, self.alpha)
 
-        self.animations = {}
+    def on_move_pressed(self, evt: pecs.EntityEvent) -> None:
+        match evt.data.direction:
+            case ["y", -1]:
+                pass
+            case ["y", 1]:
+                pass
+            case ["x", -1]:
+                pass
+            case ["x", 1]:
+                pass
 
-        # for anim_key, mapping in animations.items():
-        #     for frame_key, surface in mapping:
-        #         self.animations[frame_key]
-
-        # self.animations = {
-        #     anim_key: RenderIterable(list(anim_dict.values()))
-        #     for anim_key, anim_dict in animations.items()
-        # }
-        # debug(self.animations)
+    def on_move_released(self, evt: pecs.EntityEvent) -> None:
+        match evt.data.direction:
+            case ["y", -1]:
+                pass
+            case ["y", 1]:
+                pass
+            case ["x", -1]:
+                pass
+            case ["x", 1]:
+                pass
 
     def update(self) -> None:
-        pass
-        # self.surface.fill(self.foreground)
+        self.surface.fill(self.foreground)
 
         # frame = next(self.animation)
         # frame = pyg.transform.scale(frame, (
