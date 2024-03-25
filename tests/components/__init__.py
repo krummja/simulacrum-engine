@@ -1,13 +1,17 @@
-from .test import Test
 from .renderable import Renderable
 from .position import Position
-from .controller import Controller
+from .controllable import Controllable
 from .velocity import Velocity
+from .physics_body import PhysicsBody
+from .animatable import Animatable
+from .sprite import Sprite
 
 __all__ = [
-    "Test",
     "Renderable",
     "Position",
-    "Controller",
+    "Controllable",
     "Velocity",
+    "PhysicsBody",
+    "Animatable",
+    "Sprite",
 ]
