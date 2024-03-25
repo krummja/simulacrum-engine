@@ -20,6 +20,7 @@ from simulacrum_engine.rendering import RenderManager
 from simulacrum_engine.sound import SoundManager
 from simulacrum_engine.window import WindowManager
 from simulacrum_engine.ui.ui_manager import UIManager
+from simulacrum_engine.animation import AnimationManager
 
 from simulacrum_engine.component import EC
 
@@ -37,6 +38,7 @@ class Engine:
         sound_manager: type[SoundManager] = SoundManager,
         window_manager: type[WindowManager] = WindowManager,
         render_manager: type[RenderManager] = RenderManager,
+        animation_manager: type[AnimationManager] = AnimationManager,
         ui_manager: type[UIManager] = UIManager,
         init_mapping: dict[str, dict[str, Any]] | None = None
     ) -> None:
@@ -50,17 +52,16 @@ class Engine:
         self._is_booted = False
 
         self.initialize_component(render_manager)
+        self.initialize_component(asset_manager)
         self.initialize_component(window_manager)
         self.initialize_component(input_manager)
-        self.initialize_component(asset_manager)
         self.initialize_component(physics_manager)
         self.initialize_component(sound_manager)
+        self.initialize_component(animation_manager)
+        self.initialize_component(ui_manager)
 
         ecs_params = init_mapping.get(ECSManager.id, {})
         self.initialize_component(ecs_manager, **ecs_params)
-
-        ui_params = init_mapping.get(UIManager.id, {})
-        self.initialize_component(ui_manager, **ui_params)
 
     def __getitem__(self, key: type[EC] | str) -> EC:
         if isinstance(key, str):

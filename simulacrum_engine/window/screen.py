@@ -3,6 +3,7 @@ from typing import *
 if TYPE_CHECKING:
     from simulacrum_engine.window.window import Window
     from simulacrum_engine.rendering.render_object import RenderObject
+    from moderngl import Uniform
 
 from simulacrum_engine.rendering.gl_context import GLContext
 
@@ -12,11 +13,16 @@ import pygame as pyg
 class Screen:
 
     def __init__(self, window: Window) -> None:
+        """
+        Wrapper around the PyGame `Surface` being used as the primary display.
+        """
         self.window = window
 
-        pyg.init()
+        result = pyg.init()
+        self.pygame_init_failures = result[1]
+
         pyg.display.set_caption(window.title)
-        self._screen = pyg.display.set_mode(window.dimensions, window.flags)
+        self._screen = pyg.display.set_mode(window.dimensions, window.flags, vsync=1)
 
         self.render_object: RenderObject | None = None
         if window.opengl:
@@ -28,7 +34,7 @@ class Screen:
                     fragment_path=str(self.window.fragment_path),
                 )
 
-    def cycle(self, uniforms: dict[str, Any] | None = None) -> None:
+    def cycle(self, uniforms: dict[str, pyg.Surface] | None = None) -> None:
         if uniforms is None:
             uniforms = {}
 
@@ -38,7 +44,7 @@ class Screen:
             self.render_object.render(uniforms=uniforms)
         else:
             self._screen.blit(uniforms["default"], (0, 0))
-            self._screen.blit(uniforms["ui"], (0, 0))
+            self._screen.blit(uniforms["ui_surf"], (0, 0))
 
         pyg.display.flip()
 

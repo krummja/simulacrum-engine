@@ -25,5 +25,9 @@ def load_sound(path: Path):
     pass
 
 
-def load_animation(path: Path):
-    pass
+def load_animation(path: Path) -> list[pyg.Surface]:
+    frames = []
+    for file in path.iterdir():
+        texture = pyg.image.load(file).convert_alpha()
+        frames.append(texture)
+    return frames

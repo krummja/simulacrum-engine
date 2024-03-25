@@ -3,7 +3,6 @@ from typing import *
 if TYPE_CHECKING:
     pass
 
-from simulacrum_engine.logger import log_boot
 from simulacrum_engine.component import EngineComponent
 
 

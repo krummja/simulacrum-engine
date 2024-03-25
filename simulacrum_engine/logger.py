@@ -16,16 +16,18 @@ from simulacrum_engine.events import Events
 
 def map_symbols(key: object | None = None) -> str:
     key = str(key)
-    if key not in ["success", "warning", "error"] or key is None:
-        return " "
+    if key not in ["success", "warning", "error", "info"] or key is None:
+        return color("◇", fg="gray")
     return color({
         'success': '✔',
         'warning': '⚠',
-        'error': '✖'
+        'error': '✖',
+        'info': '◇',
     }[key], fg={
         'success': 'green',
         'warning': 'orange',
         'error': 'red',
+        'info': 'gray',
     }[key])
 
 
@@ -124,35 +126,3 @@ class Logger:
 
     def info(self, message: str, symbol: str | None = None, **extra: Any) -> None:
         self.log.info(message, symbol=symbol, **extra)
-
-
-
-
-class BootParams(TypedDict):
-    pass
-
-
-P = TypeVar("P", bound=BootParams, covariant=True)
-
-BootFunction: TypeAlias = Callable[[EC, P], bool]
-
-M = TypeVar("M", bound=BootFunction)
-
-class BootMethod(Protocol[M, P]):
-    __call__: M
-
-
-def log_boot(boot_method: BootMethod[M, P]) -> BootMethod:
-
-    # functools.wraps(boot_method)
-    def method_proxy(self: EngineComponent, params: BootParams | None = None) -> bool:
-        boot_result = boot_method(self, params)
-        return boot_result
-
-        # self.engine.emitter.emit(
-        #     Events.LOG_INFO,
-        #     message=f"{self.id} booted.",
-        #     symbol="success" if boot_result else "error",
-        # )
-
-    return method_proxy

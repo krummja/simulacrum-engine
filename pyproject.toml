@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simulacrum-engine"
-version = "0.1.9"
+version = "0.1.11"
 description = "A game engine built with PyGame and ModernGL"
 license = "MIT"
 authors = ["Jonathan Crum <crumja4@gmail.com>"]
@@ -44,6 +44,9 @@ pendulum = "^3.0.0"
 treeswift = "^1.1.40"
 transitions = "^0.9.0"
 python-statemachine = "^2.1.2"
+pdoc = "^14.4.0"
+nutree = "^0.7.1"
+pymunk = "^6.6.0"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^3.20.0"

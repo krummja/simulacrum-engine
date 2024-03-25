@@ -3,7 +3,7 @@ from typing import *
 if TYPE_CHECKING:
     pass
 
-from simulacrum_engine.logger import log_boot
+import pygame as pyg
 from simulacrum_engine.component import EngineComponent
 from simulacrum_engine.rendering.render_manager import RenderManager
 from simulacrum_engine.events import Events
@@ -17,6 +17,21 @@ class WindowManager(EngineComponent):
         self.window = Window(
             self.engine.config.window,
             self.engine.config.shader,
+        )
+
+        failures = self.window.pygame_init_failures
+        self.emitter.emit(
+            Events.LOG_INFO,
+            message=f"Detected {failures} PyGame init failures",
+            symbol="success" if failures == 0 else "error",
+        )
+
+        sdl_version = pyg.get_sdl_version()
+        sdl_version_str = ".".join([str(part) for part in sdl_version])
+        self.emitter.emit(
+            Events.LOG_INFO,
+            message=f"Using SDL Version {sdl_version_str}",
+            symbol="info",
         )
 
         self.emitter.on(Events.POST_UPDATE, self.cycle)

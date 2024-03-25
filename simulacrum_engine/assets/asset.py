@@ -3,7 +3,9 @@ from typing import *
 if TYPE_CHECKING:
     pass
 
-import os
+from simulacrum_engine.animation import Animation
+import pygame as pyg
+
 from pathlib import Path
 from enum import StrEnum
 
@@ -21,15 +23,23 @@ class AssetType(StrEnum):
     TEXTURE = "TEXTURE"
 
 
-class Asset:
+_AssetType = Animation | pyg.Surface | list[Animation] | list[pyg.Surface]
+AT = TypeVar("AT", bound=_AssetType)
 
-    def __init__(self, asset_type: AssetType, path: Path | None = None) -> None:
+
+class Asset(Generic[AT]):
+
+    def __init__(
+        self,
+        name: str,
+        path: Path,
+        asset_type: AssetType,
+        contents: AT,
+    ) -> None:
+        self.name = name
+        self.path = path
         self.asset_type = asset_type
+        self._contents = contents
 
-        if (ASSET_PATH := os.environ.get("ASSET_PATH")) and path is not None:
-            self.path = Path(ASSET_PATH, path)
-        else:
-            self.path = path
-
-    def load(self) -> None:
-        raise NotImplementedError("This method has no implementation.")
+    def unwrap(self) -> AT:
+        return self._contents

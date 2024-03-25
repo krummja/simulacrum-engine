@@ -93,7 +93,7 @@ class Renderer:
         for group in self.groups:
             self.render_queue[group] = []
 
-    def cycle(self, dest_surfaces: dict[str, pyg.Surface]) -> dict[str, pyg.Surface]:
+    def cycle(self, *, dest_surfaces: dict[str, pyg.Surface]) -> dict[str, pyg.Surface]:
         """
         Process the render queue by iterating over the `Surface` objects in the
         `dest_surfaces` mapping.
@@ -102,7 +102,10 @@ class Renderer:
 
         for group in dest_surfaces:
             if group in self.render_queue:
-                sorted(self.render_queue[group], key=lambda r: r.z_level)
+                self.render_queue[group] = sorted(
+                    self.render_queue[group],
+                    key=lambda r: r.z_level,
+                )
                 self.render_count += len(self.render_queue[group])
 
                 for renderable in self.render_queue[group]:

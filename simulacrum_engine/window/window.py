@@ -35,6 +35,11 @@ class Window:
         self.opengl = shader.opengl
         self.fragment_path = shader.fragment_path
 
+        # If `opengl` is enabled in the project config, tell PyGame to use OpenGL
+        # rendering with double buffering.
+        # When the `DOUBLEBUF` flag is set, the display waits for vertical retrace.
+        # By default, this results in surfaces being swapped. When `OPENGL` is also
+        # set, PyGame will perform a GL buffer swap instead.
         if self.opengl:
             self.flags = self.flags | pyg.DOUBLEBUF | pyg.OPENGL
 
@@ -42,6 +47,7 @@ class Window:
 
         self.frame_manager = FrameManager(self)
         self.screen = Screen(self)
+        self.pygame_init_failures = self.screen.pygame_init_failures
 
         if window.icon_path:
             icon = pyg.image.load(window.icon_path).convert_alpha()

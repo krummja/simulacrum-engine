@@ -5,7 +5,6 @@ if TYPE_CHECKING:
 
 import pygame as pyg
 
-from simulacrum_engine.logger import log_boot
 from simulacrum_engine.component import EngineComponent
 from simulacrum_engine.events import Events
 from .keyboard import Keyboard
@@ -22,7 +21,7 @@ class InputManager(EngineComponent):
         self.keyboard.setup(self.config)
         self.mouse.setup(self.config)
 
-        self.emitter.on(Events.POST_UPDATE, self.cycle)
+        self.emitter.on(Events.PRE_UPDATE, self.cycle)
         return True
 
     def cycle(self) -> None:

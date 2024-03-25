@@ -91,7 +91,7 @@ class GLContext:
             gl_buffer=gl_buffer,
         )
 
-    def pg_to_tex(self, surface: pyg.Surface) -> mgl.Texture:
+    def pg_to_tex(self, *, surface: pyg.Surface) -> mgl.Texture:
         channels = 4
         texture = self.ctx.texture(surface.get_size(), channels)
         texture.filter = (mgl.NEAREST, mgl.NEAREST)
@@ -101,6 +101,7 @@ class GLContext:
 
     def pg_to_tex_update(
         self,
+        *,
         texture: mgl.Texture,
         surface: pyg.Surface,
     ) -> mgl.Texture:

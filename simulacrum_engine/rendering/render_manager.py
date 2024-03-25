@@ -5,7 +5,6 @@ if TYPE_CHECKING:
 
 import pygame as pyg
 
-from simulacrum_engine.logger import log_boot
 from simulacrum_engine.component import EngineComponent
 from simulacrum_engine.events import Events
 
@@ -50,5 +49,7 @@ class RenderManager(EngineComponent):
 
     def cycle(self) -> None:
         self.uniforms["default"].fill((21, 21, 21))
+
+        # ! In order to use the UI Surface like this, I need a key color
         self.uniforms["ui_surf"].fill((0, 0, 0, 0))
-        self._renderer.cycle(self.uniforms)
+        self._renderer.cycle(dest_surfaces=self.uniforms)
