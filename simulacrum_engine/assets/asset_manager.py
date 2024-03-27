@@ -4,10 +4,13 @@ if TYPE_CHECKING:
     pass
 
 import time
+import json
 
 import pygame as pyg
 from pathlib import Path
-from simulacrum_engine.animation import Animation, AnimationConfig
+from simulacrum_engine.animation import Animation
+from simulacrum_engine.animation import AnimationConfig
+from simulacrum_engine.animation import DEFAULT_ANIMATION_CONFIG
 from simulacrum_engine.component import EngineComponent
 from simulacrum_engine.events import Events
 from simulacrum_engine.assets import asset_utils
@@ -42,10 +45,14 @@ class AssetManager(EngineComponent):
         match asset_type:
             case AssetType.ANIMATION:
                 subpath = Path(self.asset_path, "animations", entity)
+
+                config_mapping: dict[str, AnimationConfig] = {}
+                if (config_path := Path(subpath, "config.json")).exists():
+                    with open(config_path, "r") as config_file:
+                        config_mapping = json.loads(config_file.read())
+
                 for animation_path in subpath.iterdir():
-                    if asset := self.try_load_animation(animation_path, {
-                        "frame_delay": 30,
-                    }):
+                    if asset := self.try_load_animation(animation_path, config_mapping):
                         if entity not in self.assets[AssetType.ANIMATION]:
                             self.assets[AssetType.ANIMATION][entity] = {}
                         self.assets[AssetType.ANIMATION][entity][asset.name] = asset
@@ -53,16 +60,18 @@ class AssetManager(EngineComponent):
     def try_load_animation(
         self,
         path: Path,
-        config: AnimationConfig,
+        config_mapping: dict[str, AnimationConfig],
     ) -> Asset[Animation] | None:
         frames = []
-        if path.exists():
+        if path.exists() and path.is_dir():
             animation_name = path.name
             for image in path.iterdir():
                 frame = pyg.image.load(image)
                 frames.append(frame)
-        animation = Animation(animation_name, frames, config)
-        return Asset(animation_name, path, AssetType.ANIMATION, animation)
+            config = config_mapping.get(animation_name, DEFAULT_ANIMATION_CONFIG)
+
+            animation = Animation(animation_name, frames, config)
+            return Asset(animation_name, path, AssetType.ANIMATION, animation)
 
     def get_assets_for(
         self,

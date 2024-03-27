@@ -9,11 +9,13 @@ import pygame as pyg
 class AnimationConfig(TypedDict):
     frame_delay: NotRequired[int]
     alpha: NotRequired[bool]
+    can_mirror: NotRequired[bool]
 
 
 DEFAULT_ANIMATION_CONFIG = AnimationConfig({
     "frame_delay": 0,
     "alpha": True,
+    "can_mirror": False,
 })
 
 
@@ -84,7 +86,8 @@ class Animator:
         self.surface = surface
         self._is_playing = False
 
-    def play(self) -> None:
+    def play(self, flipped_h: bool = False, flipped_v: bool = False) -> None:
+        pyg.transform.flip(self.surface, flipped_h, flipped_v)
         self._is_playing = True
 
     def pause(self) -> None:

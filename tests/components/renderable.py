@@ -4,9 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 import pecs_framework as pecs
 
-from pathlib import Path
 import pygame as pyg
-
 from simulacrum_engine.rendering.color import Color
 
 
@@ -18,6 +16,8 @@ class Renderable(pecs.Component):
     height: int = 18
     alpha: bool = True
     scale: float = 1.0
+    flipped_h: bool = False
+    flipped_v: bool = False
 
     @cached_property
     def surface(self) -> pyg.Surface:
@@ -25,28 +25,6 @@ class Renderable(pecs.Component):
 
     def __post_init__(self) -> None:
         self.surface.fill(self.foreground)
-
-    # def on_move_pressed(self, evt: pecs.EntityEvent) -> None:
-    #     match evt.data.direction:
-    #         case ["y", -1]:
-    #             pass
-    #         case ["y", 1]:
-    #             pass
-    #         case ["x", -1]:
-    #             pass
-    #         case ["x", 1]:
-    #             pass
-
-    # def on_move_released(self, evt: pecs.EntityEvent) -> None:
-    #     match evt.data.direction:
-    #         case ["y", -1]:
-    #             pass
-    #         case ["y", 1]:
-    #             pass
-    #         case ["x", -1]:
-    #             pass
-    #         case ["x", 1]:
-    #             pass
 
     def update(self, frame: pyg.Surface) -> None:
         self.surface.fill(self.foreground)
@@ -56,5 +34,14 @@ class Renderable(pecs.Component):
             frame.get_height() * self.scale,
         ))
 
+        frame = pyg.transform.flip(frame, self.flipped_h, self.flipped_v)
+
         flags = pyg.BLEND_RGBA_MULT if self.alpha else 0
         self.surface.blit(frame, (0, 0), special_flags=flags)
+
+    def on_set_flipped(self, evt: pecs.EntityEvent) -> pecs.EntityEvent:
+        if hasattr(evt.data, "flipped_h"):
+            self.flipped_h = evt.data.flipped_h
+        if hasattr(evt.data, "flipped_v"):
+            self.flipped_v = evt.data.flipped_v
+        return evt

@@ -12,9 +12,15 @@ from simulacrum_engine.events import Events
 from simulacrum_engine.animation import Animator
 
 
-class AnimationJob(NamedTuple):
-    entity: str
-    animation: str
+class AnimationOptions(TypedDict):
+    flipped_h: bool
+    flipped_v: bool
+
+
+DEFAULT_ANIMATION_OPTIONS: AnimationOptions = {
+    "flipped_h": False,
+    "flipped_v": False,
+}
 
 
 class AnimatorRegistry:
@@ -56,9 +62,16 @@ class AnimationManager(EngineComponent):
     def teardown(self) -> None:
         pass
 
-    def play(self, entity: str, animation: str) -> None:
+    def play(
+        self,
+        entity: str,
+        animation: str,
+        options: AnimationOptions | None = None,
+    ) -> None:
+        if options is None:
+            options = DEFAULT_ANIMATION_OPTIONS
         animator = self._registry.mapping[entity][animation]
-        animator.play()
+        animator.play(**options)
 
     def pause(self, entity: str, animation: str) -> None:
         animator = self._registry.mapping[entity][animation]

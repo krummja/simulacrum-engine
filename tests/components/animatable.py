@@ -8,6 +8,9 @@ from simulacrum_engine.assets import Asset
 from simulacrum_engine.animation import Animation
 
 
+Transform: TypeAlias = Literal["mirror_v"] | Literal["mirror_h"]
+
+
 @dataclass
 class Animatable(pecs.Component):
     animations: dict[str, Asset[Animation]]
@@ -15,7 +18,6 @@ class Animatable(pecs.Component):
 
     def __post_init__(self) -> None:
         self._current_animation: str = self.start_animation
-        self._current_frame: pyg.Surface | None = None
 
     @property
     def current_animation(self) -> Animation:

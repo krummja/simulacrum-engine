@@ -13,6 +13,7 @@ from tests import components
 class ControlBinding(NamedTuple):
     key: str
     direction: tuple[Literal["x"] | Literal["y"], int]
+    state_name: str
 
 
 class ControllerSystem(System):
@@ -22,15 +23,16 @@ class ControllerSystem(System):
         self.query("controllables", all_of=[
             components.Controllable,
             components.Position,
+            components.Velocity,
         ])
 
     @cached_property
     def bindings(self) -> list[ControlBinding]:
         return [
-            ControlBinding("W", ("y", -1)),
-            ControlBinding("A", ("x", -1)),
-            ControlBinding("S", ("y", 1)),
-            ControlBinding("D", ("x", 1)),
+            ControlBinding("W", ("y", -1), "move+up"),
+            ControlBinding("A", ("x", -1), "move+left"),
+            ControlBinding("S", ("y", 1), "move+down"),
+            ControlBinding("D", ("x", 1), "move+right"),
         ]
 
     def update(self) -> None:
@@ -41,21 +43,23 @@ class ControllerSystem(System):
 
         for entity in controllables:
             position = entity[components.Position]
+            velocity = entity[components.Velocity]
             input_vector = pyg.Vector2(0, 0)
 
             for binding in self.bindings:
                 if self.input.keyboard.pressed(binding.key):
-                    entity.fire_event("move_pressed", data={
-                        "direction": binding.direction,
+                    entity.fire_event("request_state", data={
+                        "state_name": binding.state_name,
                     })
 
                 if self.input.keyboard.holding(binding.key):
                     setattr(input_vector, *binding.direction)
 
                 if self.input.keyboard.released(binding.key):
-                    entity.fire_event("move_released", data={
-                        "direction": binding.direction,
-                    })
+                    if input_vector.magnitude() == 0:
+                        entity.fire_event("request_state", data={
+                            "state_name": "idle",
+                        })
 
             move_direction = pyg.Vector2(input_vector.x, input_vector.y)
             magnitude = move_direction.magnitude()
@@ -63,5 +67,8 @@ class ControllerSystem(System):
             if magnitude != 0:
                 move_direction = move_direction.normalize()
 
-            position.x += move_direction.x * speed * dt
-            position.y += move_direction.y * speed * dt
+            velocity.x = move_direction.x * speed
+            velocity.y = move_direction.y * speed
+
+            position.x += velocity.x * dt
+            position.y += velocity.y * dt

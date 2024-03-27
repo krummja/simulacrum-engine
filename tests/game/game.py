@@ -17,7 +17,18 @@ from tests.game.controller import ControllerSystem
 from tests.game.rendering import RenderSystem
 from tests.game.physics import PhysicsSystem
 
-from devtools import debug
+
+class PlayerModel:
+
+    def __init__(self, entity: pecs.Entity) -> None:
+        self.entity = entity
+        self.animatable = entity[components.Animatable]
+
+    def animate_stop(self) -> None:
+        self.animatable.set_animation("idle")
+
+    def animate_move(self) -> None:
+        self.animatable.set_animation("run")
 
 
 def setup_player(assets: AssetManager, ecs: pecs.Engine) -> pecs.Entity:
@@ -35,7 +46,7 @@ def setup_player(assets: AssetManager, ecs: pecs.Engine) -> pecs.Entity:
         "foreground": Color(255, 255, 255),
         "background": Color(0, 0, 0),
         "alpha": True,
-        "scale": 4.0,
+        "scale": 10.0,
     })
 
     ecs.components.attach(player, components.Controllable)
@@ -43,6 +54,22 @@ def setup_player(assets: AssetManager, ecs: pecs.Engine) -> pecs.Entity:
     ecs.components.attach(player, components.Position, {
         "x": 600,
         "y": 150,
+    })
+
+    ecs.components.attach(player, components.Velocity)
+
+    ecs.components.attach(player, components.StateControl, {
+        "state_model": PlayerModel(player),
+        "states": [
+            {"name": "idle", "on_enter": ["animate_stop"]},
+            {"name": "move", "children": [
+                {"name": "up", "on_enter": ["animate_move"]},
+                {"name": "left", "on_enter": ["animate_move"]},
+                {"name": "down", "on_enter": ["animate_move"]},
+                {"name": "right", "on_enter": ["animate_move"]},
+            ]}
+        ],
+        "initial": "idle",
     })
 
     return player

@@ -1,0 +1,10 @@
+{
+    "idle": {
+        "frame_delay": 60,
+        "can_mirror": true
+    },
+    "run": {
+        "frame_delay": 10,
+        "can_mirror": true
+    }
+}

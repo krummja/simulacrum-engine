@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import *
 
-import pecs_framework as pecs
+import pygame as pyg
 from simulacrum_engine import *
 from simulacrum_engine.ecs.system import System
 
@@ -22,6 +22,7 @@ class RenderSystem(System):
 
     def update(self) -> None:
         renderables = self._queries["renderables"].result
+
         for entity in renderables:
             renderable = entity[components.Renderable]
             position = entity[components.Position]
@@ -35,6 +36,18 @@ class RenderSystem(System):
                 frame = entity[components.Sprite].texture
             else:
                 return
+
+            if self.ecs.components.has(entity, components.Velocity):
+                x = entity[components.Velocity].x
+                y = entity[components.Velocity].y
+                if x < 0 and not renderable.flipped_h:
+                    entity.fire_event("set_flipped", data={
+                        "flipped_h": True,
+                    })
+                if x > 0 and renderable.flipped_h:
+                    entity.fire_event("set_flipped", data={
+                        "flipped_h": False,
+                    })
 
             renderable.update(frame)
 
