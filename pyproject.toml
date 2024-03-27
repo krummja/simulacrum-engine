@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simulacrum-engine"
-version = "0.1.11"
+version = "0.1.12"
 description = "A game engine built with PyGame and ModernGL"
 license = "MIT"
 authors = ["Jonathan Crum <crumja4@gmail.com>"]
