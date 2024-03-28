@@ -1379,6 +1379,20 @@ diagrams = ["pygraphviz"]
 test = ["pytest"]
 
 [[package]]
+name = "treelib"
+version = "1.7.0"
+description = "A Python implementation of tree structure."
+optional = false
+python-versions = "*"
+files = [
+    {file = "treelib-1.7.0-py3-none-any.whl", hash = "sha256:c37795eaba19f73f3e1a905ef3f4f0cab660dc7617126e8ae99391e25c755416"},
+    {file = "treelib-1.7.0.tar.gz", hash = "sha256:9bff1af416b9e642a6cd0e0431d15edf26a24b8d0c8ae68afbd3801b5e30fb61"},
+]
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "treeswift"
 version = "1.1.40"
 description = "TreeSwift: Fast tree module for Python 2 and 3"
@@ -1443,4 +1457,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "cbfa2a161605e0e0e700d0490bf71e61e8202b45a33ba1d3f79fdb012d524582"
+content-hash = "d406d60f94bd84a1abbbb2c3b0bf64e2180d51f281922052b0773fa967d29980"

@@ -11,7 +11,10 @@ class PhysicsBody(pecs.Component):
     mass: float
 
     def __post_init__(self) -> None:
-        self._body = pym.Body(mass=self.mass)
+        self._body = pym.Body(
+            mass=self.mass,
+        )
+
         self._added = False
 
     @property

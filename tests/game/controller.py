@@ -26,6 +26,8 @@ class ControllerSystem(System):
             components.Velocity,
         ])
 
+        self.input_vector = pyg.Vector2(0, 0)
+
     @cached_property
     def bindings(self) -> list[ControlBinding]:
         return [
@@ -44,7 +46,6 @@ class ControllerSystem(System):
         for entity in controllables:
             position = entity[components.Position]
             velocity = entity[components.Velocity]
-            input_vector = pyg.Vector2(0, 0)
 
             for binding in self.bindings:
                 if self.input.keyboard.pressed(binding.key):
@@ -53,18 +54,24 @@ class ControllerSystem(System):
                     })
 
                 if self.input.keyboard.holding(binding.key):
-                    setattr(input_vector, *binding.direction)
+                    input_value = binding.direction[1]
+                    if binding.direction[0] == "x":
+                        self.input_vector.x = input_value
+                    if binding.direction[0] == "y":
+                        self.input_vector.y = input_value
 
                 if self.input.keyboard.released(binding.key):
-                    if input_vector.magnitude() == 0:
+                    if binding.direction[0] == "x":
+                        self.input_vector.x = 0
+                    if binding.direction[0] == "y":
+                        self.input_vector.y = 0
+                    if self.input_vector.x == 0 and self.input_vector.y == 0:
                         entity.fire_event("request_state", data={
                             "state_name": "idle",
                         })
 
-            move_direction = pyg.Vector2(input_vector.x, input_vector.y)
-            magnitude = move_direction.magnitude()
-
-            if magnitude != 0:
+            move_direction = self.input_vector
+            if move_direction.magnitude() != 0:
                 move_direction = move_direction.normalize()
 
             velocity.x = move_direction.x * speed

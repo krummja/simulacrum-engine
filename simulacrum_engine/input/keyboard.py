@@ -66,9 +66,6 @@ class Keyboard(InputMethod):
             else False
         )
 
-    def movement(self):
-        pass
-
     def update(self) -> None:
         for state in self.states.values():
             state.update()

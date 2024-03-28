@@ -10,6 +10,8 @@ from simulacrum_engine.rendering.color import Color
 from enum import StrEnum
 from devtools import debug
 
+from nutree import Node
+
 
 class MouseEventType(StrEnum):
     CLICK = "CLICK"
@@ -67,7 +69,13 @@ class Element:
     def __init__(self, ui_manager: UIManager, id: str) -> None:
         self.ui_manager = ui_manager
         self.id = id
+        self._tree = ui_manager.tree
         self._is_mouse_over = False
+        self._is_visible = False
+
+    @property
+    def is_visible(self) -> bool:
+        return self._is_visible
 
     def initialize(self, props: ElementProps | None = None) -> Self:
         if props is None:

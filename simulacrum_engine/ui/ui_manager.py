@@ -16,15 +16,17 @@ from simulacrum_engine.events import Events
 from simulacrum_engine.input import InputManager
 from simulacrum_engine.ui.elements.text import UIText
 
+from nutree import Tree, Node
+
 
 class UIManager(EngineComponent):
 
     def boot(self) -> bool:
         self.config = self.engine.config.asset
         self.renderer = self.engine[RenderManager].renderer
-        self.text = UIText(Path(self.config.asset_path, "fonts"))
+        self.tree = Tree("ui")
+
         self.emitter.on(Events.UPDATE, self.cycle)
-        self.elements: OrderedDict[str, Element] = OrderedDict()
         return True
 
     @property
@@ -32,23 +34,37 @@ class UIManager(EngineComponent):
         return self.engine[InputManager]
 
     def add_element(self, id: str, element: type[Element], props: ElementProps) -> None:
-        instance = element(self, id)
-        self.elements[instance.id] = instance.initialize(props)
+        elem = self.tree.add_child(element(self, id))
+        elem.data.initialize(props)
+
+    def add_child_for_element(
+        self,
+        parent_id: str,
+        child_id: str,
+        element: type[Element],
+        props: ElementProps,
+    ) -> None:
+        if node := self.find_element(parent_id):
+            child = node.add_child(element(self, child_id))
+            child.data.initialize(props)
+
+    def find_element(self, id: str) -> Node | None:
+        result = self.tree.find(match=lambda n: n.data.id == id)
+        if result is not None:
+            return result
+
+    def get_parent_for_element(self, id: str) -> Node | None:
+        if element := self.find_element(id):
+            return element.parent
+
+    def get_childen_for_element(self, id: str) -> list[Node] | None:
+        if element := self.find_element(id):
+            return element.children
 
     def cycle(self) -> None:
         if self.engine.config.window.debug:
             fps = self.engine[WindowManager].fps
             ticks = self.engine[ECSManager].loop.ticks
 
-            for element in self.elements.values():
-                element.cycle()
-
-            # self.text["large_font"].render_with(self.renderer, {
-            #     "text": f"FPS: {round(fps)}",
-            #     "loc": (8, 8 * 1),
-            # })
-
-            # self.text["large_font"].render_with(self.renderer, {
-            #     "text": f"TCK: {round(ticks)}",
-            #     "loc": (8, 8 * 4),
-            # })
+            for element in self.tree.iterator():
+                element.data.cycle()
